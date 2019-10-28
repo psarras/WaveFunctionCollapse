@@ -12,6 +12,7 @@ using System.Drawing;
 using System.Xml.Linq;
 using System.Drawing.Imaging;
 using System.Collections.Generic;
+using System.IO;
 
 class SimpleTiledModel : Model
 {
@@ -20,12 +21,12 @@ class SimpleTiledModel : Model
     int tilesize;
     bool black;
 
-    public SimpleTiledModel(string name, string subsetName, int width, int height, bool periodic, bool black) : base(width, height)
+    public SimpleTiledModel(string name, string config, string subsetName, int width, int height, bool periodic, bool black) : base(width, height)
     {
         this.periodic = periodic;
         this.black = black;
 
-        XElement xroot = XDocument.Load($"samples/{name}/data.xml").Root;
+        XElement xroot = XDocument.Load(config).Root;
         tilesize = xroot.Get("size", 16);
         bool unique = xroot.Get("unique", false);
 
@@ -114,19 +115,22 @@ class SimpleTiledModel : Model
 
                 action.Add(map[t]);
             }
-
+            var root = Path.GetDirectoryName(config);
+            //var root = Path.GetPathRoot(config);
+            //var root = new DirectoryInfo(config);
             if (unique)
             {
                 for (int t = 0; t < cardinality; t++)
                 {
-                    Bitmap bitmap = new Bitmap($"samples/{name}/{tilename} {t}.png");
+                    Bitmap bitmap = new Bitmap($"{root}/{tilename} {t}.png");
                     tiles.Add(tile((x, y) => bitmap.GetPixel(x, y)));
                     tilenames.Add($"{tilename} {t}");
                 }
             }
             else
             {
-                Bitmap bitmap = new Bitmap($"samples/{name}/{tilename}.png");
+
+                Bitmap bitmap = new Bitmap($"{root}/{tilename}.png");
                 tiles.Add(tile((x, y) => bitmap.GetPixel(x, y)));
                 tilenames.Add($"{tilename} 0");
 

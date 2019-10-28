@@ -9,10 +9,39 @@ The software is provided "as is", without warranty of any kind, express or impli
 using System;
 using System.Xml.Linq;
 using System.Diagnostics;
-
+using CommandLine;
 static class Program
 {
-    static void Main()
+    static void Main(string[] args)
+    {
+        CommandLine.Parser.Default.ParseArguments<OverlappingModelOptions, SimpleTiledModelOptions>(args)
+        .WithParsed<OverlappingModelOptions>(o =>
+        {
+            var model = new OverlappingModel(o.Sample, o.N, o.Width, o.Height, o.PeriodicInput, o.PeriodicOutput, o.Symmetry, o.Ground);
+            Random r = new Random();
+            var limit = 0;
+            var finished = model.Run(r.Next(), limit);
+            if (finished)
+            {
+                var graphic = model.Graphics();
+                graphic.Save("Test.png");
+            }
+        })
+        .WithParsed<SimpleTiledModelOptions>(o =>
+        {
+            var model = new SimpleTiledModel(o.Sample, o.Config, o.Subset, o.Width, o.Height, o.Periodic, o.Black);
+            Random r = new Random();
+            var limit = 0;
+            var finished = model.Run(r.Next(), limit);
+            if (finished)
+            {
+                var graphic = model.Graphics();
+                graphic.Save("Test.png");
+            }
+        })
+        .WithNotParsed(errs => { });
+    }
+    static void Main2()
     {
         Stopwatch sw = Stopwatch.StartNew();
 
@@ -25,12 +54,19 @@ static class Program
             Model model;
             string name = xelem.Get<string>("name");
             Console.WriteLine($"< {name}");
+            string path = $"samples/{name}.png";
 
-            if (xelem.Name == "overlapping") model = new OverlappingModel(name, xelem.Get("N", 2), xelem.Get("width", 48), xelem.Get("height", 48),
+            if (xelem.Name == "overlapping")
+                model = new OverlappingModel(path, xelem.Get("N", 2), xelem.Get("width", 48), xelem.Get("height", 48),
                 xelem.Get("periodicInput", true), xelem.Get("periodic", false), xelem.Get("symmetry", 8), xelem.Get("ground", 0));
-            else if (xelem.Name == "simpletiled") model = new SimpleTiledModel(name, xelem.Get<string>("subset"),
+            else if (xelem.Name == "simpletiled")
+            {
+                var config = $"samples/{name}/data.xml";
+                model = new SimpleTiledModel(name, config, xelem.Get<string>("subset"),
                 xelem.Get("width", 10), xelem.Get("height", 10), xelem.Get("periodic", false), xelem.Get("black", false));
-            else continue;
+            }
+            else
+                continue;
 
             for (int i = 0; i < xelem.Get("screenshots", 2); i++)
             {
