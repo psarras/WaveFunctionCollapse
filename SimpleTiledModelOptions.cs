@@ -20,7 +20,7 @@ public class SimpleTiledModelOptions
     [Option('h', "Height", Required = false, Default = 10, HelpText = "Height of the target output")]
     public int Height { get; set; }
 
-    [Option('t', "subset", Required = true, HelpText = "Image file to use for synthesis")]
+    [Option('t', "subset", Required = false, Default = "", HelpText = "Image file to use for synthesis")]
     public string Subset { get; set; }
 
     [Option('p', "Periodic", Required = false, Default = false, HelpText = "periodic parameter")]
@@ -30,5 +30,14 @@ public class SimpleTiledModelOptions
     public bool Black { get; set; }
 
     [Option('c', "Config", Required = false, Default = "", HelpText = "Configuration for tile relation")]
-    public string Config { get; internal set; }
+    public string Config { get; set; }
+
+    [Option('d', "TextOutput", Required = false, Default = false, HelpText = "Save output to text")]
+    public bool TextOutput { get; set; }
+
+    [Option('o', "Output", Required = false, Default = "", HelpText = "Output Folder")]
+    public string Output { get; set; }
+
+    [Option('u', "Suffix", Required = false, Default = "", HelpText = "suffix to use in the end to differentiate between multiple samples")]
+    public string Suffix { get; set; }
 }

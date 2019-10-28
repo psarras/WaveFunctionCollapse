@@ -23,10 +23,10 @@ public class OverlappingModelOptions
     [Option('h', "Height", Required = false, Default = 48, HelpText = "Height of the target output")]
     public int Height { get; set; }
 
-    [Option('i', "PeriodicInput", Required = false, Default = true, HelpText = "Is input periodic")]
+    [Option("PeriodicInput", Required = false, Default = true, HelpText = "Is input periodic")]
     public bool PeriodicInput { get; set; }
 
-    [Option('o', "PeriodicOutput", Required = false, Default = false, HelpText = "should output be periodic")]
+    [Option("PeriodicOutput", Required = false, Default = false, HelpText = "should output be periodic")]
     public bool PeriodicOutput { get; set; }
 
     [Option('y', "Symmetry", Required = false, Default = 8, HelpText = "symmetry parameter")]
@@ -34,4 +34,17 @@ public class OverlappingModelOptions
 
     [Option('g', "Ground", Required = false, Default = 0, HelpText = "ground parameter")]
     public int Ground { get; set; }
+
+    [Option('o', "Output", Required = false, Default = "", HelpText = "Output Folder")]
+    public string Output { get; set; }
+
+    [Option('u', "Suffix", Required = false, Default = "", HelpText = "suffix to use in the end to differentiate between multiple samples")]
+    public string Suffix { get; set; }
+}
+
+
+[Verb("Examples", HelpText = "Run all the example models")]
+public class Examples
+{
+
 }

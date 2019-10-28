@@ -10,88 +10,68 @@ using System;
 using System.Xml.Linq;
 using System.Diagnostics;
 using CommandLine;
+using System.IO;
+
 static class Program
 {
     static void Main(string[] args)
     {
-        CommandLine.Parser.Default.ParseArguments<OverlappingModelOptions, SimpleTiledModelOptions>(args)
-        .WithParsed<OverlappingModelOptions>(o =>
+        //Model model = default;
+        string outputFolder = "";
+        Parser.Default.ParseArguments<OverlappingModelOptions, SimpleTiledModelOptions, Examples>(args)
+        .WithParsed((Action<OverlappingModelOptions>)(o =>
         {
             var model = new OverlappingModel(o.Sample, o.N, o.Width, o.Height, o.PeriodicInput, o.PeriodicOutput, o.Symmetry, o.Ground);
-            Random r = new Random();
-            var limit = 0;
-            var finished = model.Run(r.Next(), limit);
-            if (finished)
-            {
-                var graphic = model.Graphics();
-                graphic.Save("Test.png");
-            }
-        })
-        .WithParsed<SimpleTiledModelOptions>(o =>
+            outputFolder = o.Output;
+            var parameters = $"N={o.N} PeriodicInput={o.PeriodicInput} PeriodicOut={o.PeriodicOutput} Sym={o.Symmetry} Ground={o.Ground}";
+            string outputFile = GetOutputFile(o.Sample, o.Suffix, o.Output, parameters);
+
+            SaveModel<OverlappingModel>(model as OverlappingModel, outputFile);
+        }))
+        .WithParsed((Action<SimpleTiledModelOptions>)(o =>
         {
             var model = new SimpleTiledModel(o.Sample, o.Config, o.Subset, o.Width, o.Height, o.Periodic, o.Black);
-            Random r = new Random();
-            var limit = 0;
-            var finished = model.Run(r.Next(), limit);
-            if (finished)
-            {
-                var graphic = model.Graphics();
-                graphic.Save("Test.png");
-            }
-        })
+
+            var parameters = $"Sub={o.Subset} Periodic={o.Periodic} Black={o.Black}";
+            string outputFile = GetOutputFile(o.Sample, o.Suffix, o.Output, parameters);
+            var finished = SaveModel(model, outputFile);
+
+            if (finished && o.TextOutput)
+                File.WriteAllText($"test.txt", (model as SimpleTiledModel).TextOutput());
+
+        }))
+        .WithParsed((Action<Examples>)(o =>
+       {
+           Example.Examples();
+       }))
         .WithNotParsed(errs => { });
+
     }
-    static void Main2()
+
+    private static string GetOutputFile(string sample, string suffix, string output, string parameters)
     {
-        Stopwatch sw = Stopwatch.StartNew();
+        var filename = Path.GetFileNameWithoutExtension(sample);
+        var extention = Path.GetExtension(sample);
 
-        Random random = new Random();
-        XDocument xdoc = XDocument.Load("samples.xml");
+        var outputFile = $"{filename} {parameters}{suffix}{extention}";
+        outputFile = Path.Combine(output, outputFile);
+        if (!output.Equals("") && !Directory.Exists(output))
+            Directory.CreateDirectory(output);
 
-        int counter = 1;
-        foreach (XElement xelem in xdoc.Root.Elements("overlapping", "simpletiled"))
+        Console.WriteLine($"Writing to File: {outputFile}");
+        return outputFile;
+    }
+
+    private static bool SaveModel<T>(T model, string path) where T : Model
+    {
+        var limit = 0;
+        Random r = new Random();
+        var finished = model.Run(r.Next(), limit);
+        if (finished)
         {
-            Model model;
-            string name = xelem.Get<string>("name");
-            Console.WriteLine($"< {name}");
-            string path = $"samples/{name}.png";
-
-            if (xelem.Name == "overlapping")
-                model = new OverlappingModel(path, xelem.Get("N", 2), xelem.Get("width", 48), xelem.Get("height", 48),
-                xelem.Get("periodicInput", true), xelem.Get("periodic", false), xelem.Get("symmetry", 8), xelem.Get("ground", 0));
-            else if (xelem.Name == "simpletiled")
-            {
-                var config = $"samples/{name}/data.xml";
-                model = new SimpleTiledModel(name, config, xelem.Get<string>("subset"),
-                xelem.Get("width", 10), xelem.Get("height", 10), xelem.Get("periodic", false), xelem.Get("black", false));
-            }
-            else
-                continue;
-
-            for (int i = 0; i < xelem.Get("screenshots", 2); i++)
-            {
-                for (int k = 0; k < 10; k++)
-                {
-                    Console.Write("> ");
-                    int seed = random.Next();
-                    bool finished = model.Run(seed, xelem.Get("limit", 0));
-                    if (finished)
-                    {
-                        Console.WriteLine("DONE");
-
-                        model.Graphics().Save($"{counter} {name} {i}.png");
-                        if (model is SimpleTiledModel && xelem.Get("textOutput", false))
-                            System.IO.File.WriteAllText($"{counter} {name} {i}.txt", (model as SimpleTiledModel).TextOutput());
-
-                        break;
-                    }
-                    else Console.WriteLine("CONTRADICTION");
-                }
-            }
-
-            counter++;
+            var graphic = model.Graphics();
+            graphic.Save(path);
         }
-
-        Console.WriteLine($"time = {sw.ElapsedMilliseconds}");
+        return finished;
     }
 }
