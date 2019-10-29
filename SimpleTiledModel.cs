@@ -27,6 +27,7 @@ class SimpleTiledModel : Model
         this.black = black;
 
         XElement xroot = XDocument.Load(config).Root;
+        // this.tilesize = tilesize;
         tilesize = xroot.Get("size", 16);
         bool unique = xroot.Get("unique", false);
 
@@ -116,8 +117,7 @@ class SimpleTiledModel : Model
                 action.Add(map[t]);
             }
             var root = Path.GetDirectoryName(config);
-            //var root = Path.GetPathRoot(config);
-            //var root = new DirectoryInfo(config);
+
             if (unique)
             {
                 for (int t = 0; t < cardinality; t++)

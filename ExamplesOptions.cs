@@ -8,21 +8,8 @@ The software is provided "as is", without warranty of any kind, express or impli
 
 using CommandLine;
 
-[Verb("Overlapping", HelpText = "Run an overlapping type model on the target input")]
-public class OverlappingModelOptions : CommonOptions
+[Verb("Examples", HelpText = "Run all the example models")]
+public class ExamplesOptions
 {
-    [Option('N', "N_Parameter", Required = false, Default = 1, HelpText = "N parameter")]
-    public int N { get; set; }
 
-    [Option("PeriodicInput", Required = false, Default = true, HelpText = "Is input periodic")]
-    public bool PeriodicInput { get; set; }
-
-    [Option("PeriodicOutput", Required = false, Default = false, HelpText = "should output be periodic")]
-    public bool PeriodicOutput { get; set; }
-
-    [Option('y', "Symmetry", Required = false, Default = 8, HelpText = "symmetry parameter")]
-    public int Symmetry { get; set; }
-
-    [Option('g', "Ground", Required = false, Default = 0, HelpText = "ground parameter")]
-    public int Ground { get; set; }
 }

@@ -18,28 +18,28 @@ static class Program
     {
         Random r = new Random();
         string outputFolder = "";
-        Parser.Default.ParseArguments<OverlappingModelOptions, SimpleTiledModelOptions, Examples>(args)
+        Parser.Default.ParseArguments<OverlappingModelOptions, SimpleTiledModelOptions, ExamplesOptions>(args)
         .WithParsed((Action<OverlappingModelOptions>)(o =>
         {
-            var model = new OverlappingModel(o.Sample, o.N, o.Width, o.Height, o.PeriodicInput, o.PeriodicOutput, o.Symmetry, o.Ground);
+            var model = new OverlappingModel(o.Input, o.N, o.Width, o.Height, o.PeriodicInput, o.PeriodicOutput, o.Symmetry, o.Ground);
             outputFolder = o.Output;
             r = new Random(o.Seed);
             for (int i = 0; i < o.Views; i++)
             {
                 var parameters = $"Seed={o.Seed} View={i} N={o.N} PeriodicInput={o.PeriodicInput} PeriodicOut={o.PeriodicOutput} Sym={o.Symmetry} Ground={o.Ground}";
-                string outputFile = GetOutputFile(o.Sample, o.Suffix, o.Output, parameters);
+                string outputFile = GetOutputFile(o.Input, o.Suffix, o.Output, parameters);
                 SaveModel(model, r.Next(), outputFile);
             }
 
         }))
         .WithParsed((Action<SimpleTiledModelOptions>)(o =>
         {
-            var model = new SimpleTiledModel(o.Sample, o.Config, o.Subset, o.Width, o.Height, o.Periodic, o.Black);
+            var model = new SimpleTiledModel(o.Input, o.Config, o.Subset, o.Width, o.Height, o.Periodic, o.Black);
             r = new Random(o.Seed);
             for (int i = 0; i < o.Views; i++)
             {
                 var parameters = $"Seed={o.Seed} View={i} Sub={o.Subset} Periodic={o.Periodic} Black={o.Black}";
-                string outputFile = GetOutputFile(o.Sample, o.Suffix, o.Output, parameters);
+                string outputFile = GetOutputFile(o.Input, o.Suffix, o.Output, parameters);
                 var finished = SaveModel(model, r.Next(), outputFile);
 
                 if (finished && o.TextOutput)
@@ -50,7 +50,7 @@ static class Program
             }
 
         }))
-        .WithParsed((Action<Examples>)(o =>
+        .WithParsed((Action<ExamplesOptions>)(o =>
        {
            Example.Examples();
        }))

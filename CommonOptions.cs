@@ -8,21 +8,26 @@ The software is provided "as is", without warranty of any kind, express or impli
 
 using CommandLine;
 
-[Verb("Overlapping", HelpText = "Run an overlapping type model on the target input")]
-public class OverlappingModelOptions : CommonOptions
+public class CommonOptions
 {
-    [Option('N', "N_Parameter", Required = false, Default = 1, HelpText = "N parameter")]
-    public int N { get; set; }
+    [Option('i', "input", Required = true, HelpText = "Image file to use for synthesis")]
+    public string Input { get; set; }
 
-    [Option("PeriodicInput", Required = false, Default = true, HelpText = "Is input periodic")]
-    public bool PeriodicInput { get; set; }
+    [Option('w', "Width", Required = false, Default = 10, HelpText = "Width of the target output")]
+    public int Width { get; set; }
 
-    [Option("PeriodicOutput", Required = false, Default = false, HelpText = "should output be periodic")]
-    public bool PeriodicOutput { get; set; }
+    [Option('h', "Height", Required = false, Default = 10, HelpText = "Height of the target output")]
+    public int Height { get; set; }
 
-    [Option('y', "Symmetry", Required = false, Default = 8, HelpText = "symmetry parameter")]
-    public int Symmetry { get; set; }
+    [Option('v', "views", Required = false, Default = 1, HelpText = "Number of different views to get")]
+    public int Views { get; set; }
 
-    [Option('g', "Ground", Required = false, Default = 0, HelpText = "ground parameter")]
-    public int Ground { get; set; }
+    [Option('r', "RandomSeed", Required = false, Default = 1, HelpText = "Number of different views to get")]
+    public int Seed { get; set; }
+
+    [Option('u', "Suffix", Required = false, Default = "", HelpText = "suffix to use in the end to differentiate between multiple samples")]
+    public string Suffix { get; set; }
+
+    [Option('o', "Output", Required = false, Default = "", HelpText = "Output Folder")]
+    public string Output { get; set; }
 }

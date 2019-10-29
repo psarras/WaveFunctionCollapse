@@ -10,9 +10,12 @@
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
             "program": "${workspaceFolder}/bin/Debug/netcoreapp3.0/WaveFunctionCollapse.dll",
-            "args": ["SimpleTiled", "-s", "./samples/Knot.png", "-c", "./samples/Knots/data.xml", "-t", "TE", "-w", "24", "-h", "24", "-d", "true", "-o", ".\\Gen"],
+            // "args": ["SimpleTiled", "-s", "./samples/Knot.png", "-c", "./samples/Knots/data.xml", "-t", "TE", "-w", "24", "-h", "24", "-d", "true", "-o", ".\\Gen"],
             // "args": ["SimpleTiled", "-s", "./samples/Rooms.png", "-c", "./samples/Rooms/data.xml", "-w", "30", "-h", "30"],
+            "args": ["SimpleTiled", "-s", "./samples/Rooms.png"],
+            // "args": ["Examples"],
             // "args": ["Overlapping", "-s", ".\\samples\\Flowers.png", "-N", "3", "--PeriodicOutput", "true", "--PeriodicInput", "false", "-g", "-4", "-y", "2", "-o", ".\\Gen"],
+            // "args": ["Overlapping", "-s", ".\\samples\\Flowers.png"],
             "cwd": "${workspaceFolder}",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "internalConsole",
