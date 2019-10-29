@@ -16,28 +16,38 @@ static class Program
 {
     static void Main(string[] args)
     {
-        //Model model = default;
+        Random r = new Random();
         string outputFolder = "";
         Parser.Default.ParseArguments<OverlappingModelOptions, SimpleTiledModelOptions, Examples>(args)
         .WithParsed((Action<OverlappingModelOptions>)(o =>
         {
             var model = new OverlappingModel(o.Sample, o.N, o.Width, o.Height, o.PeriodicInput, o.PeriodicOutput, o.Symmetry, o.Ground);
             outputFolder = o.Output;
-            var parameters = $"N={o.N} PeriodicInput={o.PeriodicInput} PeriodicOut={o.PeriodicOutput} Sym={o.Symmetry} Ground={o.Ground}";
-            string outputFile = GetOutputFile(o.Sample, o.Suffix, o.Output, parameters);
+            r = new Random(o.Seed);
+            for (int i = 0; i < o.Views; i++)
+            {
+                var parameters = $"Seed={o.Seed} View={i} N={o.N} PeriodicInput={o.PeriodicInput} PeriodicOut={o.PeriodicOutput} Sym={o.Symmetry} Ground={o.Ground}";
+                string outputFile = GetOutputFile(o.Sample, o.Suffix, o.Output, parameters);
+                SaveModel(model, r.Next(), outputFile);
+            }
 
-            SaveModel<OverlappingModel>(model as OverlappingModel, outputFile);
         }))
         .WithParsed((Action<SimpleTiledModelOptions>)(o =>
         {
             var model = new SimpleTiledModel(o.Sample, o.Config, o.Subset, o.Width, o.Height, o.Periodic, o.Black);
+            r = new Random(o.Seed);
+            for (int i = 0; i < o.Views; i++)
+            {
+                var parameters = $"Seed={o.Seed} View={i} Sub={o.Subset} Periodic={o.Periodic} Black={o.Black}";
+                string outputFile = GetOutputFile(o.Sample, o.Suffix, o.Output, parameters);
+                var finished = SaveModel(model, r.Next(), outputFile);
 
-            var parameters = $"Sub={o.Subset} Periodic={o.Periodic} Black={o.Black}";
-            string outputFile = GetOutputFile(o.Sample, o.Suffix, o.Output, parameters);
-            var finished = SaveModel(model, outputFile);
-
-            if (finished && o.TextOutput)
-                File.WriteAllText($"test.txt", (model as SimpleTiledModel).TextOutput());
+                if (finished && o.TextOutput)
+                {
+                    var data = Path.ChangeExtension(outputFile, "txt");
+                    File.WriteAllText(data, (model as SimpleTiledModel).TextOutput());
+                }
+            }
 
         }))
         .WithParsed((Action<Examples>)(o =>
@@ -62,11 +72,10 @@ static class Program
         return outputFile;
     }
 
-    private static bool SaveModel<T>(T model, string path) where T : Model
+    private static bool SaveModel(Model model, int seed, string path)
     {
         var limit = 0;
-        Random r = new Random();
-        var finished = model.Run(r.Next(), limit);
+        var finished = model.Run(seed, limit);
         if (finished)
         {
             var graphic = model.Graphics();

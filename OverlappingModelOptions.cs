@@ -40,6 +40,15 @@ public class OverlappingModelOptions
 
     [Option('u', "Suffix", Required = false, Default = "", HelpText = "suffix to use in the end to differentiate between multiple samples")]
     public string Suffix { get; set; }
+
+    [Option('v', "views", Required = false, Default = 1, HelpText = "Number of different views to get")]
+    public int Views { get; set; }
+
+    [Option('r', "RandomSeed", Required = false, Default = 1, HelpText = "Number of different views to get")]
+    public int Seed { get; set; }
+
+
+
 }
 
 

@@ -31,7 +31,7 @@ class SimpleTiledModel : Model
         bool unique = xroot.Get("unique", false);
 
         List<string> subset = null;
-        if (subsetName != default(string))
+        if (subsetName != default(string) && !subsetName.Equals(""))
         {
             XElement xsubset = xroot.Element("subsets").Elements("subset").FirstOrDefault(x => x.Get<string>("name") == subsetName);
             if (xsubset == null) Console.WriteLine($"ERROR: subset {subsetName} is not found");
